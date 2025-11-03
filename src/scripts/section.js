@@ -3,34 +3,36 @@ import axios from 'axios'
 
 function changeSection() {
     
-return{
-    change_section: "signup",
-    email:" ",
-    nickname:" ",
-    password:" ",
+   return{
+      change_section: "signup",
+      email:" ",
+      nickname:" ",
+      password:" ",
 
-    async doSignUp(){
-        const {email, nickname, password} = this
-        if(email != "" && nickname != "" && password != ""){
-            const userData ={
+      async doSignUp(){
+         const { email, nickname, password } = this
+         if(email != "" && nickname != "" && password != "") {
+            const userData = {
                 user: {
                     email,
                     nickname,
                     password,
                 },
             }
+
             try {
-            const resp = await axios.post("https://todoo.5xcamp.us/users", userData)
-            console.log(resp); 
-            } catch(err){
-                alert(err.response.data.message)
+              const resp = await axios.post("https://todoo.5xcamp.us/users", userData)
+              console.log(resp)
+            } catch (err) {
+              alert(err.response.data.message)
             }
         }
     },
-    gotoLogin: function () {
+
+    gotoLogin() {
         this.change_section = "login"
     },
-    gotoSignUp: function () {
+    gotoSignUp() {
         this.change_section = "signup"
     },
 
@@ -43,6 +45,6 @@ return{
     showTask(){
         return this.change_section == "task"
     }
-}
+ }
 }
 export { changeSection }

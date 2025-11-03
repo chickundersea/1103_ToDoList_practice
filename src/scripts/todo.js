@@ -4,7 +4,7 @@
 import Alpine from 'alpinejs'
 window.Alpine = Alpine
 
-import { changeSection } from './section'
+import { changeSection } from './section.js'
 Alpine.data("cs", changeSection)
 
 Alpine.start()
