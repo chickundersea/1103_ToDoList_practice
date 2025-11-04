@@ -1,13 +1,26 @@
-
 import axios from 'axios'
 
 function changeSection() {
     
    return{
       change_section: "signup",
-      email:" ",
-      nickname:" ",
-      password:" ",
+      email: "",
+      nickname: "",
+      password: "",
+
+      init(){
+           const token = localStorage.getItem("todoToken")
+              if (token) {
+                this.gotoTask()
+              } else {
+                this.gotoSignUp()
+              }
+      },
+
+       isLogin(){
+            const token = localStorage.getItem("todoToken")
+            return token != ""
+       },
 
        async doLogin(){
            const { email, password } = this
@@ -18,18 +31,25 @@ function changeSection() {
                         password,
                         },
                     }
+                    console.log(userData);
+                try { 
+                    const resp =  await axios.post("https://todoo.5xcamp.us/users/sign_in", userData)
+                    const token = resp.headers.authorization
 
-                try {   await axios.post("https://todoo.5xcamp.us/users/sign_in", userData)
-                    console.log(resp);
-                } catch (err) {
+                    if (token) {
+                        localStorage.setItem("todoToken", token)
+                         }
+                         this.resetForm ()
+                         this.gotoTask ()
+                    } catch (err) {
                     alert(err.response.data.message)
-                }
-                  }
+                    }
+            }
        },
 
-       async doSignUp(e){
+       async doSignUp(){
            const { email, nickname, password } = this
-           
+
            if(email != "" && nickname != "" && password != "") {
                const userData = {
                    user: {
@@ -39,23 +59,31 @@ function changeSection() {
                     },
                 }
 
-            try {
-              const resp = await axios.post("https://todoo.5xcamp.us/users", userData)
-              this.email = ""
-              this.nickname = ""
-              this.password = ""
-              this.gotoLogin()
-            } catch (err) {
-              alert(err.response.data.message)
+              try {
+                 await axios.post("https://todoo.5xcamp.us/users", userData)
+                 this.resetForm ()
+                 this.gotoLogin()
+                } catch (err) {
+                     alert(err.response.data.message)
+                  }
             }
-          }
        },
+
+
+        resetForm() {
+           this.email = ""
+           this.password = ""
+           this.nickname = ""
+           },
 
         gotoLogin() {
              this.change_section = "login"
              },
         gotoSignUp() {
              this.change_section = "signup"
+             },
+        gotoTask() {
+             this.change_section = "task"
              },
 
         showLogin(){

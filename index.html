@@ -30,6 +30,7 @@
         <nav class="navbar">
           <a @click="gotoLogin" class="loginLink" href="#login">登入</a>
           <a @click="gotoSignUp" class="signUpLink" href="#sign_up">註冊</a>
+          <a class="signUpLink" href="#">登出</a>
         </nav>
       </header>
 
@@ -109,7 +110,7 @@
             </div>
 
             <div class="items-center justify-between block sm:flex field">
-              <button @click="doSignUp">註冊</button>
+              <button @click.prevent="doSignUp">註冊</button>
               <div class="text-xl text-gray-600">已經有帳號了？<a @click="gotoLogin" href="#" class="text-link loginLink">登入</a></div>
             </div>
           </form>
