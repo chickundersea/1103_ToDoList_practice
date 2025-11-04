@@ -9,42 +9,64 @@ function changeSection() {
       nickname:" ",
       password:" ",
 
-      async doSignUp(){
-         const { email, nickname, password } = this
-         if(email != "" && nickname != "" && password != "") {
-            const userData = {
-                user: {
+       async doLogin(){
+           const { email, password } = this
+              if(email != "" && password != "") {
+                    const userData = {
+                        user: {
+                        email,
+                        password,
+                        },
+                    }
+
+                try {   await axios.post("https://todoo.5xcamp.us/users/sign_in", userData)
+                    console.log(resp);
+                } catch (err) {
+                    alert(err.response.data.message)
+                }
+                  }
+       },
+
+       async doSignUp(e){
+           const { email, nickname, password } = this
+           
+           if(email != "" && nickname != "" && password != "") {
+               const userData = {
+                   user: {
                     email,
                     nickname,
                     password,
-                },
-            }
+                    },
+                }
 
             try {
               const resp = await axios.post("https://todoo.5xcamp.us/users", userData)
-              console.log(resp)
+              this.email = ""
+              this.nickname = ""
+              this.password = ""
+              this.gotoLogin()
             } catch (err) {
               alert(err.response.data.message)
             }
-        }
-    },
+          }
+       },
 
-    gotoLogin() {
-        this.change_section = "login"
-    },
-    gotoSignUp() {
-        this.change_section = "signup"
-    },
+        gotoLogin() {
+             this.change_section = "login"
+             },
+        gotoSignUp() {
+             this.change_section = "signup"
+             },
 
-    showLogin(){
-        return this.change_section == "login"
-    },
-    showSignUp(){
-        return this.change_section == "signup"
-    },
-    showTask(){
-        return this.change_section == "task"
+        showLogin(){
+             return this.change_section == "login"
+             },
+        showSignUp(){
+             return this.change_section == "signup"
+             },
+        showTask(){
+             return this.change_section == "task"
+            }
     }
- }
 }
 export { changeSection }
