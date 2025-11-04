@@ -7,20 +7,24 @@ function changeSection() {
       email: "",
       nickname: "",
       password: "",
+      isLogin: false,
 
       init(){
            const token = localStorage.getItem("todoToken")
               if (token) {
+                this.isLogin = true
+              } 
+              if (this.isLogin) {
                 this.gotoTask()
               } else {
                 this.gotoSignUp()
               }
       },
 
-       isLogin(){
-            const token = localStorage.getItem("todoToken")
-            return token != ""
-       },
+    //    isLogin(){
+    //         const token = localStorage.getItem("todoToken")
+    //         return token != ""
+    //    },
 
        async doLogin(){
            const { email, password } = this
@@ -38,6 +42,7 @@ function changeSection() {
 
                     if (token) {
                         localStorage.setItem("todoToken", token)
+                        this.isLogin = true 
                          }
                          this.resetForm ()
                          this.gotoTask ()
@@ -94,7 +99,27 @@ function changeSection() {
              },
         showTask(){
              return this.change_section == "task"
+            },
+            
+        async LogOut(){
+        const token = localStorage.getItem("todoToken")
+
+            if(token){
+            const config = {
+                headers: {
+                    Authorization: token,
+                   },
+                }
+            try{
+                const resp = await axios.delete("https://todoo.5xcamp.us/users/sign_out", config)
+                localStorage.removeItem("todoToken")
+                this.isLogin = false
+                this.gotoLogin()
+                } catch (err) {
+                    console.log(err);
+                    }
             }
+        }
     }
 }
 export { changeSection }
