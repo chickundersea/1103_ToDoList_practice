@@ -153,10 +153,17 @@ function changeSection() {
             }
         },
 
-        // deleteTask(a) {
-        //     const taskId = a.currentTarget.dataset.id
-        //     this.tasks = this.tasks.filter(t => t.id !== taskId)
-        // },
+       async toggleTask(id){
+          const taskIndex = this.tasks.findIndex((t) => t.id === id)
+            if (taskIndex >= 0) {
+                const resp = await axios.patch(`https://todoo.5xcamp.us/todos/${id}/toggle`, {}, {
+                    headers: {
+                        Authorization: localStorage.getItem("todoToken")
+                    }
+                })
+                this.tasks[taskIndex] = resp.data
+            }
+       },
 
         deleteTask(id){
             try{

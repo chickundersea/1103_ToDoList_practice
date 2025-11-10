@@ -135,7 +135,7 @@
           <li>
           <div class="item-content">
             <label>
-              <input type="checkbox" />
+              <input type="checkbox" @click.prevent="toggleTask(t.id)" />
               <p class="content" x-text="t.content">我要學 Python</p>
             </label>
           </div>
