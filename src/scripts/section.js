@@ -8,11 +8,14 @@ function changeSection() {
       nickname: "",
       password: "",
       isLogin: false,
+      taskName: "",
+      tasks: [],
 
       init(){
            const token = localStorage.getItem("todoToken")
               if (token) {
                 this.isLogin = true
+                this.getTasks()
               } 
               if (this.isLogin) {
                 this.gotoTask()
@@ -20,11 +23,31 @@ function changeSection() {
                 this.gotoSignUp()
               }
       },
+      
 
-    //    isLogin(){
+    //    isLogin(){cd
     //         const token = localStorage.getItem("todoToken")
     //         return token != ""
     //    },
+       async getTasks(){
+           const token = localStorage.getItem("todoToken")
+           const config ={
+            headers :{
+                Authorization : token,
+            }
+           }
+           try { 
+            const resp = await axios.get("https://todoo.5xcamp.us/todos", config)
+            this.tasks = resp.data.todos
+        } catch (err){
+            console.error(err)
+            alert(err.response?.data?.message || "取得任務列表失敗")
+        };
+            
+        },
+
+        
+            
 
        async doLogin(){
            const { email, password } = this
@@ -80,6 +103,82 @@ function changeSection() {
            this.password = ""
            this.nickname = ""
            },
+
+
+
+
+// 輸入框的任務
+        async addTask() {
+              if (this.taskName != "") {
+                // API
+                  const todoData = {
+                    todo : {
+                        content : this.taskName.trim(),
+                    },
+                  }
+                  const token = localStorage.getItem("todoToken")
+                  const config = {
+                    headers: {
+                        Authorization: token,
+                  }
+            }
+            
+            // 假戲,為了在前端先顯示結果（體驗比較好）
+            const dummyTask = {
+                id: crypto.randomUUID(),
+                content: this.taskName.trim(),
+                completed_at: null,
+            }
+
+            this.tasks.unshift (dummyTask)
+            try {
+                // 真正呼叫 API
+                const resp = await axios.post("https://todoo.5xcamp.us/todos", todoData, config)
+                const newTask = resp.data
+
+                // 用伺服器回傳的真資料取代 dummy task
+                const idx = this.tasks.findIndex((t) => {
+                    return t.id === dummyTask.id
+                })
+                    this.tasks.splice(idx, 1, newTask)
+                } catch (err) {
+                console.error(err)
+                // 新增失敗時移除 dummy
+                    alert(err.response?.data?.message || '新增失敗')
+                }
+
+
+            //   做送出後清除（搭配.trim）
+                this.taskName = ""
+            }
+        },
+
+        // deleteTask(a) {
+        //     const taskId = a.currentTarget.dataset.id
+        //     this.tasks = this.tasks.filter(t => t.id !== taskId)
+        // },
+
+        deleteTask(id){
+            try{
+                const token = localStorage.getItem("todoToken")
+                const config = {
+                      headers: {
+                         Authorization: token
+                      }
+                    }
+            const taskIndex = this.tasks.findIndex((t) => {
+                return t.id === id
+            })
+            if (taskIndex >= 0) {
+                this.tasks.splice(taskIndex, 1)
+               }
+            axios.delete(`https://todoo.5xcamp.us/todos/${id}`, config)
+            } catch (err){
+            console.error(err)
+            alert(err.response?.data?.message || "刪除失敗")
+            this.getTasks()
+           }
+        },
 
         gotoLogin() {
              this.change_section = "login"
