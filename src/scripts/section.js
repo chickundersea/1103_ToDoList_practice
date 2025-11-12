@@ -1,4 +1,8 @@
 import axios from 'axios'
+import { debounce } from "throttle-debounce"
+
+
+
 
 function changeSection() {
     
@@ -104,6 +108,44 @@ function changeSection() {
            this.nickname = ""
            },
 
+          toggleDebounce : debounce(1000, function(id, count) {
+            const token = localStorage.getItem("todoToken")
+                  const config = {
+                    headers: {
+                        Authorization: token,
+                  }
+                }
+                if (count % 2 != 0){
+                    console.log("GO!")
+                }
+            axios.patch(`https://todoo.5xcamp.us/todos/${id}/toggle`, null, config )
+          }
+              
+          ),
+
+           async toggleTask(id){
+            // 假戲
+               const todo = this.tasks.find((t) => t.id == id);
+               if (todo.completed_at) {
+               // 已完成
+                 todo.completed_at = null;
+               } else {
+               // 未完成
+                 todo.completed_at = new Date();
+               }
+
+            //    this.toggleDebounce(id)
+            if (todo.count == undefined){
+                todo.count = 0
+            }
+
+            todo.count = todo.count + 1
+
+            // 真做
+            this.toggleDebounce(id, todo.count)
+
+
+           },
 
 
 
@@ -131,6 +173,10 @@ function changeSection() {
             }
 
             this.tasks.unshift (dummyTask)
+
+            //   做送出後清除（搭配.trim）
+                this.taskName = ""
+
             try {
                 // 真正呼叫 API
                 const resp = await axios.post("https://todoo.5xcamp.us/todos", todoData, config)
@@ -147,23 +193,14 @@ function changeSection() {
                     alert(err.response?.data?.message || '新增失敗')
                 }
 
-
-            //   做送出後清除（搭配.trim）
-                this.taskName = ""
+            
             }
         },
 
-       async toggleTask(id){
-          const taskIndex = this.tasks.findIndex((t) => t.id === id)
-            if (taskIndex >= 0) {
-                const resp = await axios.patch(`https://todoo.5xcamp.us/todos/${id}/toggle`, {}, {
-                    headers: {
-                        Authorization: localStorage.getItem("todoToken")
-                    }
-                })
-                this.tasks[taskIndex] = resp.data
-            }
-       },
+
+
+
+
 
         deleteTask(id){
             try{
